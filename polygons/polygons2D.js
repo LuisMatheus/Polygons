@@ -58,7 +58,7 @@ class rectangle{
     }
 
     draw(){
-        strokeWeight(0);
+        strokeWeight(1);
         stroke(this.color);
         fill(this.color);
 
@@ -110,7 +110,7 @@ class triangle{
     }
 
     draw(){
-        strokeWeight(0);
+        strokeWeight(1);
         stroke(this.color);
         fill(this.color);
 
@@ -140,27 +140,26 @@ class triangle{
     }
 }
 
-//fix
 class circle{
     constructor(x,y,r,t){
         if(t < 3) {throw('Numero minimo de triangulos eh 3')}
         this.points = []
-        this.x = x;
-        this.y = y;
-        let ang = 360/t;
+        let ang = 2*Math.PI/t;
         this.trans = new Transformations();
 
-        for(let i = 0 ; i <= t ; i ++){
+        this.points.push(new Vector(3,[x,y,1]))
+
+        for(let i = 0 ; i < t ; i ++){
             this.points.push(new Vector(3,[0,r,1]));
         }
 
         //rotate
-        for(let i = 0 ; i <+ t ; i ++){
+        for(let i = 1 ; i < t ; i++){
             this.points[i] = this.trans.rotation2D(this.points[i],i*ang);
         }
 
         //mover pra x,y
-        for (let i = 0; i < this.points.length; i++) {
+        for (let i = 1; i < this.points.length; i++) {
             this.points[i] = this.trans.translate2D(this.points[i],x,y)
         }
 
@@ -172,45 +171,39 @@ class circle{
     setColor(newColor){
         this.color = newColor;
     }
-
-    translate(dx,dy){
-        for(let i = 0 ; i < this.points.length ; i++){
-            this.points[i] = this.trans.translate2D(this.points[i],dx,dy);
-        }
-    }
-
+    
     draw(){
-        strokeWeight(0);
+        strokeWeight(1);
         stroke(this.color);
         fill(this.color);
 
         
 
         beginShape(TRIANGLES);
-        for (let i = 0; i < this.points.length-1; i++) {
+        for (let i = 1; i < this.points.length-1; i++) {
             
 
-            vertex(this.x,this.y)
+            vertex(this.points[0].get(1),this.points[0].get(2))
             vertex(this.points[i].get(1),this.points[i].get(2))
             vertex(this.points[i+1].get(1),this.points[i+1].get(2))
 
         }
 
-            vertex(this.x,this.y)
-            vertex(this.points[this.points.length-1].get(1),this.points[this.points.length-1].get(2))
             vertex(this.points[0].get(1),this.points[0].get(2))
+            vertex(this.points[this.points.length-1].get(1),this.points[this.points.length-1].get(2))
+            vertex(this.points[1].get(1),this.points[1].get(2))
 
         endShape()
     }
 
     rotate(angle){
+
         let old_points = this.points.slice()
 
-        this.translate(-(this.points[0].get(1)+this.points[2].get(1))/2,-(this.points[0].get(2)+this.points[2].get(2))/2)
-        for (let i = 0; i < this.points.length; i++) {
-            this.points[i] = this.trans.rotation2D(this.points[i],angle)
+        this.translate(-this.points[0].get(1),-this.points[0].get(2))
+        for(let i = 1 ; i < this.points.length ; i++){
+            this.points[i] = this.trans.rotation2D(this.points[i],angle);
         }
-        this.translate((old_points[0].get(1)+old_points[2].get(1))/2,(old_points[0].get(1)+old_points[2].get(1))/2)
-
+        this.translate(old_points[0].get(1),old_points[0].get(2))
     }
 }
